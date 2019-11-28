@@ -26,13 +26,9 @@ class ViewController: UITableViewController {
                 pictures.append(item)
             }
         }
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "RECOMMEND", style: .plain, target: self, action: #selector(shareTap))
         
-        print(pictures)
-        var currentIndex = 1
-        for _ in pictures {
-            print("Picture \(currentIndex) of \(pictures.count)")
-            currentIndex += 1
-        }
+    
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -52,5 +48,14 @@ class ViewController: UITableViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
+    @objc func shareTap() {
+           
+        
+        let share = UIActivityViewController(activityItems: ["Recommend this to friends"], applicationActivities: [])
+           share.popoverPresentationController?.barButtonItem =
+           navigationItem.rightBarButtonItem
+           present(share, animated: true)
+       }
+    
 }
 
