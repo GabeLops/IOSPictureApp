@@ -12,7 +12,7 @@ class DetailViewController: UIViewController {
     @IBOutlet var imageView: UIImageView!
     var selectedImage: String?
     var selectedPictureNumber = 0
-    var totalpictures = 10
+    var totalpictures = 0
     
    
     
