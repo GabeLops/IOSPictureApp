@@ -8,8 +8,9 @@
 
 import UIKit
 
-class ViewController: UITableViewController {
+class ViewController: UICollectionViewController {
     var pictures = [String]()
+    var photos = [Photo]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,23 +32,33 @@ class ViewController: UITableViewController {
     
     }
 
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return pictures.count
-    }
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Picture", for: indexPath)
-        cell.textLabel?.text = pictures.sorted()[indexPath.row]
-        return cell
+
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Image", for: indexPath) as? ImageCell
+        
+           
+        cell?.layer.borderColor = UIColor.lightGray.cgColor
+        cell?.layer.borderWidth = 2
+        cell?.layer.cornerRadius = 3
+        
+        cell?.name.text = pictures[indexPath.row]
+        return cell!
+    }
+        
+    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if let vc = storyboard?.instantiateViewController(withIdentifier: "Detail") as? DetailViewController {
-            vc.selectedImage = pictures[indexPath.row]
-            vc.selectedPictureNumber = indexPath.row + 1
+            vc.selectedImage = pictures[indexPath.item]
+            vc.selectedPictureNumber = indexPath.item + 1
             vc.totalpictures = pictures.count
             navigationController?.pushViewController(vc, animated: true)
         }
     }
+  
     @objc func shareTap() {
            
         
