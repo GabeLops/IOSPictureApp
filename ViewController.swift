@@ -9,11 +9,23 @@
 import UIKit
 
 class ViewController: UICollectionViewController {
-    var pictures = [String]()
-    var photos = [Photo]()
+    var pictures = [Photo]()
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+         let defaults = UserDefaults.standard
+               if let savedPictures = defaults.object(forKey: "load") as? Data {
+                   let jsonDecoder = JSONDecoder()
+                   
+                   do {
+                       pictures = try jsonDecoder.decode([Photo].self, from: savedPictures)
+                   } catch {
+                       print("Failed to load data")
+                   }
+               }
+
         
         title = "Storm Viewer"
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -23,8 +35,8 @@ class ViewController: UICollectionViewController {
         
         for item in items {
             if item.hasPrefix("nssl") {
-                //this is a picture to load
-                pictures.append(item)
+                let picture = Photo(name: item, views: 0)
+                pictures.append(picture)
             }
         }
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "RECOMMEND", style: .plain, target: self, action: #selector(shareTap))
@@ -44,15 +56,18 @@ class ViewController: UICollectionViewController {
         cell?.layer.borderColor = UIColor.lightGray.cgColor
         cell?.layer.borderWidth = 2
         cell?.layer.cornerRadius = 3
-        
-        cell?.name.text = pictures[indexPath.row]
+        let picture = pictures[indexPath.item]
+        cell?.name.text = (picture.name)
         return cell!
     }
         
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if let vc = storyboard?.instantiateViewController(withIdentifier: "Detail") as? DetailViewController {
-            vc.selectedImage = pictures[indexPath.item]
+            let picture = pictures[indexPath.item]
+            vc.selectedImage = picture.name
+            picture.views += 1
+            imageLoaded()
             vc.selectedPictureNumber = indexPath.item + 1
             vc.totalpictures = pictures.count
             navigationController?.pushViewController(vc, animated: true)
@@ -67,6 +82,18 @@ class ViewController: UICollectionViewController {
            navigationItem.rightBarButtonItem
            present(share, animated: true)
        }
+    
+    func imageLoaded() {
+        let jsonEncoder = JSONEncoder()
+        if let imageLoad = try? jsonEncoder.encode(pictures) {
+            
+            let defaults = UserDefaults.standard
+            defaults.set(imageLoad, forKey: "load")
+            
+        }else {
+            print("Failed to load image.")
+        }
+    }
     
 }
 
